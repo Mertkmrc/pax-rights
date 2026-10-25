@@ -1,0 +1,99 @@
+# Corpus sources. Raw files are downloaded to data/raw/ and never committed.
+# fetch: auto   -> scripts/fetch_corpus.py downloads it
+# fetch: manual -> the site blocks automated downloads; save it from a browser to data/raw/<id>.<format>
+#
+# kind: airline | regulation
+# jurisdiction: EU | TR (for airlines, the carrier's home jurisdiction; matters for EU261 Art. 3)
+
+sources:
+  - id: thy-gcc-en
+    title: Turkish Airlines General Conditions of Carriage of Passengers and Baggage
+    publisher: Turkish Airlines
+    kind: airline
+    jurisdiction: TR
+    lang: en
+    format: pdf
+    fetch: auto
+    url: https://cdn.turkishairlines.com/m/2591755e7480a9f8/original/Yolcu-ve-Bagaj-Tasma-Genel-Sartlar_03-02-2025_EN-1.pdf
+    retrieved: 2026-10-25
+    notes: File name says 03-02-2025. CDN path contains a content hash and will change on re-upload.
+
+  - id: thy-gcc-tr
+    title: Türk Hava Yolları Yolcu ve Bagaj Taşıma Genel Şartları
+    publisher: Türk Hava Yolları A.O.
+    kind: airline
+    jurisdiction: TR
+    lang: tr
+    format: pdf
+    fetch: auto
+    url: https://cdn.turkishairlines.com/m/594199ea28d2a9f7/original/TURK-HAVA-YOLLARI-A-O-Yolcu-Bagaj-Tasima-Genel-Sartlari.pdf
+    retrieved: 2026-10-25
+    notes: Dated 24 July 2019, so possibly older than the English 2025 file. The Turkish text prevails on conflict.
+
+  - id: pegasus-rules-en
+    title: Pegasus General Rules
+    publisher: Pegasus Airlines
+    kind: airline
+    jurisdiction: TR
+    lang: en
+    format: html
+    fetch: auto
+    url: https://www.flypgs.com/en/useful-info/info-about-flights/general-rules
+    retrieved: 2026-10-25
+    notes: Pegasus's conditions of carriage. HTML preferred; the generated PDF extracts with broken words.
+
+  - id: pegasus-rules-tr
+    title: Pegasus Genel Kurallar
+    publisher: Pegasus Airlines
+    kind: airline
+    jurisdiction: TR
+    lang: tr
+    format: html
+    fetch: auto
+    url: https://www.flypgs.com/faydali-bilgiler/ucusun-icin-bilgiler/genel-kurallar
+    retrieved: 2026-10-25
+
+  - id: lufthansa-gcc-en
+    title: Lufthansa General Conditions of Carriage for Passengers and Baggage
+    publisher: Deutsche Lufthansa AG
+    kind: airline
+    jurisdiction: EU
+    lang: en
+    format: pdf
+    fetch: manual
+    url: https://www.lufthansa.com/de/en/terms-and-conditions-lh
+    notes: Bot check blocks automated downloads. Open in a browser, print to PDF, save as data/raw/lufthansa-gcc-en.pdf, set retrieved.
+
+  - id: wizz-gcc-en
+    title: Wizz Air Hungary General Conditions of Carriage of Passengers and Baggage (1 March 2023)
+    publisher: Wizz Air Hungary Ltd
+    kind: airline
+    jurisdiction: EU
+    lang: en
+    format: pdf
+    fetch: manual
+    url: https://www.wizzair.com/cms/api/docs/default-source/downloadable-documents/general-conditions-of-carriage/gcc-wah/gcc-wah-1-march-2023/gcc-w6_en_final_010323-clean_26d02e3b-cf3a-465d-a27d-84336897b630.pdf
+    notes: EU low-cost carrier (Ryanair's terms sit behind a Cloudflare challenge). Rejects identified scripts with 405; open in a browser, save as data/raw/wizz-gcc-en.pdf, set retrieved. URL is version-specific.
+
+  - id: eu261
+    title: Regulation (EC) No 261/2004 (denied boarding, cancellation, long delay)
+    publisher: European Union (EUR-Lex)
+    kind: regulation
+    jurisdiction: EU
+    lang: en
+    format: pdf
+    fetch: manual
+    url: https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:32004R0261
+    notes: EUR-Lex serves a JS challenge to scripts. Download in a browser, save as data/raw/eu261.pdf, set retrieved.
+
+  - id: shy-yolcu
+    title: Havayolu ile Seyahat Eden Yolcuların Haklarına Dair Yönetmelik (SHY-YOLCU)
+    publisher: SHGM
+    kind: regulation
+    jurisdiction: TR
+    lang: tr
+    format: pdf
+    fetch: auto
+    url: https://web.shgm.gov.tr/doc4/shy-yolcu.pdf
+    retrieved: 2026-10-25
+    notes: Includes the 10/12/2024 amendment (RG 32748). Same text as mevzuat.gov.tr MevzuatNo=15549.
