@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS chunks (
     doc_id          text NOT NULL REFERENCES documents ON DELETE CASCADE,
     chunk_no        int  NOT NULL,
     article         text,  -- '7', '5.2'; NULL for text before the first article
+    covers          text[] NOT NULL,  -- every article the text touches: {'6','7'}; scores hits
     page            int,   -- page the chunk starts on; NULL for HTML sources
     text            text NOT NULL,
     embedding_model text NOT NULL,  -- queries must be embedded with the same model

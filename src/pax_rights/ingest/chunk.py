@@ -44,6 +44,7 @@ class Chunk(BaseModel):
     jurisdiction: Literal["EU", "TR"]
     lang: Literal["en", "tr"]
     article: str | None  # "7", "5.2"; None for text before the first article
+    covers: list[str]  # every article the text touches, e.g. ["6", "7"]; used to score hits
     page: int | None  # page the chunk starts on; None for HTML sources
     text: str
 
@@ -91,6 +92,13 @@ class Document:
 
     def article_at(self, offset: int) -> str | None:
         return _value_at(self.articles, offset)
+
+    def articles_between(self, start: int, end: int) -> list[str]:
+        """Articles whose text overlaps [start, end), in order."""
+        labels = [self.article_at(start)] + [
+            a for offset, a in self.articles if start < offset < end
+        ]
+        return list(dict.fromkeys(a for a in labels if a is not None))
 
     def article_bounds(self) -> list[int]:
         """Char offsets where each article (or the preamble) starts, plus the end."""
@@ -216,6 +224,7 @@ def _chunks(doc: Document, spans: list[tuple[int, int]]) -> list[Chunk]:
                 jurisdiction=doc.jurisdiction,
                 lang=doc.lang,
                 article=doc.article_at(start),
+                covers=doc.articles_between(start, end),
                 page=doc.page_at(start),
                 text=text,
             )

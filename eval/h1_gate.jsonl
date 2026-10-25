@@ -1,0 +1,8 @@
+{"id": "en1", "lang": "en", "question": "My flight from Frankfurt to Istanbul (about 1,900 km) was cancelled. How much compensation can I claim?", "expected_sources": [["eu261", "7"]]}
+{"id": "en2", "lang": "en", "question": "My flight is delayed for hours. Does the airline have to give me meals or a hotel?", "expected_sources": [["eu261", "9"]]}
+{"id": "en3", "lang": "en", "question": "Can I get my money back from Lufthansa for a ticket I didn't use?", "expected_sources": [["lufthansa-gcc-en", "10"]]}
+{"id": "en4", "lang": "en", "question": "How much does it cost to check in at the airport with Wizz Air?", "expected_sources": [["wizz-gcc-en", "10"]]}
+{"id": "tr1", "lang": "tr", "question": "İç hat uçuşum iptal edildi, ne kadar tazminat alabilirim?", "expected_sources": [["shy-yolcu", "8"]]}
+{"id": "tr2", "lang": "tr", "question": "THY'de bagajım kaybolursa ne olur?", "expected_sources": [["thy-gcc-tr", "16"]]}
+{"id": "tr3", "lang": "tr", "question": "Pegasus'ta kedimi kabine alabilir miyim?", "expected_sources": [["pegasus-rules-tr", "12.1"]]}
+{"id": "tr4", "lang": "tr", "question": "AB'den kalkan uçuşum iptal oldu, AB kurallarına göre ne kadar tazminat alırım?", "expected_sources": [["eu261", "7"], ["shy-yolcu", "8"]]}

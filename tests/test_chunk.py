@@ -86,3 +86,10 @@ def test_real_eu261_has_19_articles_and_article_7_is_one_chunk():
     chunks = structure_chunks(eu261)
     assert {c.article for c in chunks} - {None} == {str(n) for n in range(1, 20)}
     assert [c.article for c in chunks].count("7") == 1
+
+
+def test_fixed_chunk_spanning_two_articles_covers_both():
+    doc = document_from_pdf(EU, pages("Article 6\n" + "a " * 300 + "\nArticle 7\n" + "b " * 100))
+    (chunk,) = fixed_chunks(doc)
+    assert chunk.article == "6"
+    assert chunk.covers == ["6", "7"]
