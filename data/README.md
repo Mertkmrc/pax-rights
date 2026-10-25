@@ -30,6 +30,7 @@ Three sites block scripts (bot checks, a JS challenge, a 405 for non-browser cli
 ## Known issues
 
 - **THY versions may differ.** The English PDF is named 03-02-2025; the Turkish one is dated 24 July 2019. Both say the Turkish text prevails on conflict. Check for a newer Turkish edition.
+- **Lufthansa is a browser print.** Every page carries site navigation and a date/URL header and footer; strip them during parsing.
 - **Pegasus PDF text is broken** ("epidem ic"), so the HTML pages are used instead.
 - **Versioned URLs.** The THY and Wizz links contain content hashes or edition folders and will break on the next upload.
 - **EU261 may have been amended.** A single source reports Regulation (EU) 2026/2202 of 16 September 2026, applying from about October 2027. Not yet verified on EUR-Lex. If confirmed, add it as a separate, future-applicable document.

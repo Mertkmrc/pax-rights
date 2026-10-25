@@ -7,3 +7,4 @@ One question per session at the start, the answer (and a number if there is one)
 **Question:** Does the scaffold run from a clean clone (`docker compose up`, `uv run pytest`, CI)?
 
 **Answer:**
+ Yes

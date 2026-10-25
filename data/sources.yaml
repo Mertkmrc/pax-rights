@@ -62,7 +62,8 @@ sources:
     format: pdf
     fetch: manual
     url: https://www.lufthansa.com/de/en/terms-and-conditions-lh
-    notes: Bot check blocks automated downloads. Open in a browser, print to PDF, save as data/raw/lufthansa-gcc-en.pdf, set retrieved.
+    retrieved: 2026-10-25
+    notes: Bot check blocks automated downloads. Open in a browser, print to PDF, save as data/raw/lufthansa-gcc-en.pdf, set retrieved. The print includes site navigation and a date/URL header and footer on every page.
 
   - id: wizz-gcc-en
     title: Wizz Air Hungary General Conditions of Carriage of Passengers and Baggage (1 March 2023)
@@ -74,6 +75,7 @@ sources:
     fetch: manual
     url: https://www.wizzair.com/cms/api/docs/default-source/downloadable-documents/general-conditions-of-carriage/gcc-wah/gcc-wah-1-march-2023/gcc-w6_en_final_010323-clean_26d02e3b-cf3a-465d-a27d-84336897b630.pdf
     notes: EU low-cost carrier (Ryanair's terms sit behind a Cloudflare challenge). Rejects identified scripts with 405; open in a browser, save as data/raw/wizz-gcc-en.pdf, set retrieved. URL is version-specific.
+    retrieved: 2026-10-25
 
   - id: eu261
     title: Regulation (EC) No 261/2004 (denied boarding, cancellation, long delay)
@@ -84,6 +86,7 @@ sources:
     format: pdf
     fetch: manual
     url: https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:32004R0261
+    retrieved: 2026-10-25
     notes: EUR-Lex serves a JS challenge to scripts. Download in a browser, save as data/raw/eu261.pdf, set retrieved.
 
   - id: shy-yolcu
