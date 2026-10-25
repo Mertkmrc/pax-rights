@@ -15,3 +15,6 @@ wheels/
 # Corpus: raw and processed files stay local (redistribution status unclear, see data/README.md)
 data/raw/
 data/processed/
+
+# Chunker output, rebuilt from data/processed/
+data/chunks/

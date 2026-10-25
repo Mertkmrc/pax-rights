@@ -25,3 +25,14 @@ One question per session at the start, the answer (and a number if there is one)
 - THY EN has 16 articles, TR 18: the 2025 English and 2019 Turkish texts are structurally different versions, not translations of each other.
 - Pegasus: TR has one section EN lacks (7.3, items accepted in the cabin). Top-level sections 2 (privacy policy) and 14 (BolBol loyalty terms) are not passenger rights; candidates to exclude at chunking time.
 - Left as is (low impact): EU261 page header "L 46/N" and OJ footnotes at page ends; THY TR trailing footnote markers.
+
+**Chunking (Claude, at Mert's request; both strategies share `Document -> list[Chunk]`):** `uv run python -m pax_rights.ingest.chunk`
+
+| Strategy | Chunks | Avg tokens* | Max tokens* |
+|---|---|---|---|
+| fixed (500, overlap 50) | 405 | 495 | 500 |
+| structure (per article, windowed above 800) | 513 | 371 | 788 |
+
+\* Approximate (words + punctuation). Real counts come from Voyage at embedding time.
+
+Structure-based keeps every EU261 article intact (Art. 7 = one chunk); fixed-size labels each chunk with the article it starts in, so both can be cited. Which retrieves better is still open: that needs the gate test (3 questions) now, and the eval set in H3.
