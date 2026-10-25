@@ -46,3 +46,24 @@ Structure-based keeps every EU261 article intact (Art. 7 = one chunk); fixed-siz
 - No vector index for now (plan said HNSW in H1). At ~900 rows an exact scan is fast and returns the true top k, so the baseline is clean. Also avoids HNSW + `WHERE strategy = …` returning fewer than k rows. HNSW gets added later with latency and recall measured.
 - Idempotent ingest = delete and re-insert one (strategy, doc_id) per transaction. An upsert would leave stale rows behind when a document's chunk count shrinks.
 - Schema is applied by ingest on every run (`IF NOT EXISTS`), not in Docker's `init.sql`, which only runs on an empty volume.
+
+**Embedding + ingest (Claude):** `uv run python -m pax_rights.ingest`
+
+- 918 chunks are 912 unique texts (6 short articles come out identical in both strategies and are paid for once). 583,876 real tokens, $0.035 at list price, covered by the free 200M tokens.
+- No payment method on the Voyage account, so the free-tier limit applies (3 requests / 10K tokens per minute). Batches are paced to it: ~40 min, no rate-limit errors. The approximate token count undercounts Voyage's real count by ~1.5x overall, up to ~2x on Turkish text.
+- Idempotency: the second run took 918 vectors from cache, embedded 0 new, and left 918 rows (918 distinct `(strategy, doc_id, chunk_no)`).
+
+**Gate test (8 hand-written questions, 4 EN + 4 TR):** `uv run python scripts/gate_test.py`. A hit is an expected (doc, article) in a top-5 chunk's `covers`.
+
+| Strategy | Hits | MRR |
+|---|---|---|
+| fixed | 8/8 | 0.68 |
+| structure | 6/8 | 0.69 |
+
+Gate (at least 2 of 3) passed for both. What the misses and hits say:
+
+- Structure miss en3 (Lufthansa refund for an unused ticket, expected Art. 10 "Refunds"): the top hits are Art. 3 (Tickets), which has its own refund clause for unused flight coupons. "Didn't use" pulls toward Art. 3. The label may be too narrow; left unchanged, to be decided in the H2 golden set rather than after seeing the result.
+- Structure miss tr2 (lost baggage at THY, expected thy-gcc-tr Art. 16): no THY chunk in the top 5, Pegasus' lost-baggage section 9.7 wins. The airline named in the question carries little weight in a dense vector. Candidate fixes: filter by airline, or BM25 for the name (hybrid search).
+- Fixed's 8/8 is partly the hit rule being generous: a fixed chunk touches 1.80 articles on average (max 7), a structure chunk 0.97. The rule does not check whether the touched part answers the question.
+- en2 (meals or hotel during a delay, no jurisdiction given): SHY-Yolcu Art. 10 (Turkish right to care) ranks first in structure. A correct answer under Turkish rules, but not counted. Ambiguous questions need a jurisdiction or several accepted sources.
+- Cross-lingual works: tr4 (Turkish question about EU rules) finds EU261 Art. 7 at rank 2 in structure; voyage-4 handles Turkish queries.
