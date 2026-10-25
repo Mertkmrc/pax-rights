@@ -30,9 +30,17 @@ TAIL_LINES = 4
 REPEAT_SHARE = 0.5
 
 
+# Paragraph and section numbers ("2.", "(2)", "2.1", "5.7.10.") often sit on their own line
+# at a page edge. They must never be mistaken for page numbers.
+ENUMERATOR = re.compile(r"\(?\d+(\.\d+)*[.)]?")
+
+
 def _shape(line: str) -> str:
     # "3 / 19" and "4 / 19" should count as the same line.
-    return re.sub(r"\d+", "#", line.strip())
+    line = line.strip()
+    if ENUMERATOR.fullmatch(line) and not line.isdigit():
+        return line
+    return re.sub(r"\d+", "#", line)
 
 
 def strip_repeating_lines(pages: list[list[str]], max_passes: int = 3) -> list[list[str]]:
@@ -75,10 +83,21 @@ def dehyphenate(text: str) -> str:
     return re.sub(r"(\w)-\n([a-zçğıöşüâîû])", r"\1\2", text)
 
 
+# Symbol-font bullets come out as private-use code points; anything else in that
+# range is a web icon (Lufthansa's print). Zero-width spaces carry no text.
+BULLETS = str.maketrans({"": "•", "": "•"})
+ICONS = re.compile(r"[-​]")
+
+
+def clean_line(line: str) -> str:
+    return ICONS.sub("", line.translate(BULLETS)).rstrip()
+
+
 def parse_pdf(path: Path, doc_id: str) -> list[dict]:
     with pymupdf.open(path) as doc:
         pages = [
-            [line.rstrip() for line in page.get_text().splitlines() if line.strip()] for page in doc
+            [clean_line(line) for line in page.get_text().splitlines() if clean_line(line).strip()]
+            for page in doc
         ]
     pages = strip_repeating_lines(pages)
     return [
