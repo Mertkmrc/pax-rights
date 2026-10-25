@@ -4,7 +4,8 @@ Usage: uv run python scripts/gate_test.py   (after python -m pax_rights.ingest)
 
 A hit is a returned chunk from an expected document whose `covers` contains the
 expected article, so a fixed-size chunk that starts in Art. 6 and runs into Art. 7
-counts for an Art. 7 question.
+counts for an Art. 7 question. The stricter "label" score only counts a chunk whose
+own `article` is expected, since that is the article an answer would cite.
 """
 
 import json
@@ -28,6 +29,11 @@ LIMIT %s
 """
 
 
+def score(ranks: list[int | None]) -> str:
+    found = [r for r in ranks if r]
+    return f"{len(found)}/{len(ranks)}   MRR {sum(1 / r for r in found) / len(ranks):.2f}"
+
+
 def main() -> None:
     load_dotenv()
     questions = [json.loads(line) for line in GATE.read_text(encoding="utf-8").splitlines()]
@@ -37,15 +43,17 @@ def main() -> None:
         summary = {}
         for strategy in STRATEGIES:
             print(f"\n=== {strategy}")
-            ranks = []
+            ranks, label_ranks = [], []
             for q, vector in zip(questions, vectors, strict=True):
                 rows = conn.execute(SEARCH, (vector, strategy, MODEL, K)).fetchall()
                 expected = {(doc, article) for doc, article in q["expected_sources"]}
                 relevant = [
                     any((doc, a) in expected for a in covers) for doc, _, covers, _, _ in rows
                 ]
+                cited = [(doc, article) in expected for doc, article, _, _, _ in rows]
                 hit = relevant.index(True) + 1 if any(relevant) else None
                 ranks.append(hit)
+                label_ranks.append(cited.index(True) + 1 if any(cited) else None)
                 print(f"{'HIT ' if hit else 'MISS'} {q['id']} (rank {hit or '-'}) {q['question']}")
                 for rank, (row, ok) in enumerate(zip(rows, relevant, strict=True), start=1):
                     doc, article, covers, page, distance = row
@@ -53,12 +61,10 @@ def main() -> None:
                         f"   {'*' if ok else ' '}{rank}. {distance:.3f}  {doc}  art {article}  "
                         f"covers {covers}  p{page}"
                     )
-            summary[strategy] = ranks
+            summary[strategy] = ranks, label_ranks
     print(f"\nTop-{K} hits (gate: at least 2 of 3; here out of {len(questions)}):")
-    for strategy, ranks in summary.items():
-        found = [r for r in ranks if r]
-        mrr = sum(1 / r for r in found) / len(ranks)
-        print(f"  {strategy:10} {len(found)}/{len(ranks)}   MRR {mrr:.2f}")
+    for strategy, (ranks, label_ranks) in summary.items():
+        print(f"  {strategy:10} covers {score(ranks)}   label {score(label_ranks)}")
     print(f"query embeddings: {stats.cached} from cache, {stats.embedded} new")
 
 

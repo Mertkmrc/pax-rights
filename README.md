@@ -24,6 +24,16 @@ Every retrieval and answer change is measured against a hand-written evaluation 
 
 Python 3.12 (uv, ruff, pytest) · FastAPI · Postgres + pgvector · Voyage embeddings and rerank · Claude
 
+## Why it's built this way
+
+### Chunking by article
+
+I chunk by article, cutting articles over 800 tokens into overlapping windows. The alternative was fixed 500-token windows with a 50-token overlap.
+
+Both find the text. On the 8-question H1 gate, a relevant chunk reached the top 5 for 8/8 questions with fixed windows and 6/8 with article chunks, at nearly the same MRR (0.68 vs 0.69). But a fixed chunk spans 1.8 articles on average and carries the label of the article it starts in. Scored by that label, the one an answer cites, fixed drops to 5/8 with MRR 0.28. Every claim here cites `[doc, article]`, so the chunk boundary should be the citation boundary.
+
+The cost: one heading rule per document, so each new airline needs its own pattern. Of the two misses, one label looks too narrow; in the other, the airline's name barely moved the vector, which calls for an airline filter or BM25. If fixed windows win recall@5 on the golden set, I switch.
+
 ## Run locally
 
 Requires [uv](https://docs.astral.sh/uv/) and Docker.
