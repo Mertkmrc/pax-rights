@@ -75,18 +75,31 @@ def _strip_edges_once(pages: list[list[str]]) -> list[list[str]]:
     return cleaned
 
 
-def dehyphenate(text: str) -> str:
+def hyphenated_words(text: str) -> set[str]:
+    """Hyphenated compounds that appear unbroken somewhere in the text ("check-in")."""
+    return {w.lower() for w in re.findall(r"\w+(?:-\w+)+", text)}
+
+
+def dehyphenate(text: str, compounds: set[str] = frozenset()) -> str:
     """Join words split across lines: "trans-\\nported" -> "transported".
 
-    Only when the next line starts lowercase, so "non-\\nEU" keeps its hyphen.
+    Only when the next line starts lowercase, so "non-\\nEU" keeps its hyphen. If the
+    hyphenated form is a known compound ("check-in"), the hyphen stays.
     """
-    return re.sub(r"(\w)-\n([a-zçğıöşüâîû])", r"\1\2", text)
+
+    def join(m: re.Match) -> str:
+        left, right = m.group(1), m.group(2)
+        if f"{left}-{right}".lower() in compounds:
+            return f"{left}-{right}"
+        return left + right
+
+    return re.sub(r"(\w+)-\n([a-zçğıöşüâîû]\w*)", join, text)
 
 
 # Symbol-font bullets come out as private-use code points; anything else in that
 # range is a web icon (Lufthansa's print). Zero-width spaces carry no text.
-BULLETS = str.maketrans({"": "•", "": "•"})
-ICONS = re.compile(r"[-​]")
+BULLETS = str.maketrans({"\uf0b7": "\u2022", "\uf0a7": "\u2022"})
+ICONS = re.compile("[\ue000-\uf8ff\u200b]")
 
 
 def clean_line(line: str) -> str:
@@ -100,8 +113,9 @@ def parse_pdf(path: Path, doc_id: str) -> list[dict]:
             for page in doc
         ]
     pages = strip_repeating_lines(pages)
+    compounds = hyphenated_words("\n".join(line for lines in pages for line in lines))
     return [
-        {"doc_id": doc_id, "page": number, "text": dehyphenate("\n".join(lines))}
+        {"doc_id": doc_id, "page": number, "text": dehyphenate("\n".join(lines), compounds)}
         for number, lines in enumerate(pages, start=1)
         if lines
     ]

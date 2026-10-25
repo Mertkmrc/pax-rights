@@ -1,4 +1,9 @@
-from pax_rights.ingest.parse import clean_line, dehyphenate, strip_repeating_lines
+from pax_rights.ingest.parse import (
+    clean_line,
+    dehyphenate,
+    hyphenated_words,
+    strip_repeating_lines,
+)
 
 
 def test_strips_page_numbers_that_differ_only_in_digits():
@@ -45,3 +50,8 @@ def test_dehyphenate_joins_lowercase_continuation_only():
 def test_clean_line_maps_symbol_bullets_and_drops_icons():
     assert clean_line("\uf0b7 Item") == "• Item"
     assert clean_line("\ueaca\u200b Terms of use") == " Terms of use"
+
+
+def test_dehyphenate_keeps_hyphen_of_known_compounds():
+    text = "Online check-in opens early. Missed check-\nin deadlines cost extra."
+    assert "check-in deadlines" in dehyphenate(text, hyphenated_words(text))

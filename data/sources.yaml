@@ -54,16 +54,16 @@ sources:
     retrieved: 2026-10-25
 
   - id: lufthansa-gcc-en
-    title: Lufthansa General Conditions of Carriage for Passengers and Baggage
+    title: Lufthansa General Conditions of Carriage for Passengers and Baggage (August 2026)
     publisher: Deutsche Lufthansa AG
     kind: airline
     jurisdiction: EU
     lang: en
     format: pdf
-    fetch: manual
-    url: https://www.lufthansa.com/de/en/terms-and-conditions-lh
+    fetch: auto
+    url: https://www.lufthansa.com/content/dam/lh/documents/terms-conditions/2026_08_ABB_en.pdf
     retrieved: 2026-10-25
-    notes: Bot check blocks automated downloads. Open in a browser, print to PDF, save as data/raw/lufthansa-gcc-en.pdf, set retrieved. The print includes site navigation and a date/URL header and footer on every page.
+    notes: Official PDF linked from lufthansa.com/de/en/terms-and-conditions-lh (the HTML page sits behind a bot check; this file does not). Page 1 lists all article titles as a table of contents. Edition is in the file name and will change.
 
   - id: wizz-gcc-en
     title: Wizz Air Hungary General Conditions of Carriage of Passengers and Baggage (1 March 2023)
