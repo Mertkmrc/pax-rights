@@ -36,3 +36,13 @@ One question per session at the start, the answer (and a number if there is one)
 \* Approximate (words + punctuation). Real counts come from Voyage at embedding time.
 
 Structure-based keeps every EU261 article intact (Art. 7 = one chunk); fixed-size labels each chunk with the article it starts in, so both can be cited. Which retrieves better is still open: that needs the gate test (3 questions) now, and the eval set in H3.
+
+**Schema (`db/schema.sql`, decided together, drafted by Claude):**
+
+- One `chunks` table for both strategies, with a `strategy` column. Eval compares them with the same query code.
+- Separate `documents` table (from `sources.yaml`). Citation title and URL live in one place.
+- `embedding_cache` table keyed by (model, input_type, sha256 of text). Short articles that come out identical in both strategies are paid for once, and eval questions are cached too.
+- Model: `voyage-4`, 1024 dimensions. `voyage-4-large` is a later eval experiment.
+- No vector index for now (plan said HNSW in H1). At ~900 rows an exact scan is fast and returns the true top k, so the baseline is clean. Also avoids HNSW + `WHERE strategy = …` returning fewer than k rows. HNSW gets added later with latency and recall measured.
+- Idempotent ingest = delete and re-insert one (strategy, doc_id) per transaction. An upsert would leave stale rows behind when a document's chunk count shrinks.
+- Schema is applied by ingest on every run (`IF NOT EXISTS`), not in Docker's `init.sql`, which only runs on an empty volume.
