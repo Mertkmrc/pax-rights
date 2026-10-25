@@ -9,9 +9,12 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "anthropic>=2.3.0",
+    "beautifulsoup4>=4.15.0",
     "fastapi>=0.162.0",
     "pgvector>=0.5.1",
     "psycopg[binary]>=3.3.6",
+    "pymupdf>=2.0",
+    "pyyaml>=6.0.3",
     "uvicorn>=0.54.0",
     "voyageai>=0.5.0",
 ]
@@ -24,7 +27,6 @@ build-backend = "uv_build"
 dev = [
     "httpx>=0.28.1",
     "pytest>=9.1.1",
-    "pyyaml>=6.0.3",
     "ruff>=0.17.2",
 ]
 
